@@ -63,12 +63,12 @@ model = nn.Sequential(
     nn.Conv1d(128, 1, 1) # output layer
 ).to(device)
 
-def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batch_size=100):
+def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, log_no, batch_size):
     loader = DataLoader(TensorDataset(x_tr, y_tr), batch_size=batch_size, shuffle=True)
     tr_hist, va_hist = [], []
-    best_va = float('inf')
-    best_tr = float('inf')
-    
+    best_va = best_tr = float('inf')
+    btr = bva = ""
+
     for epoch in range(n_epochs):
         model.train()
         running = 0.0
@@ -87,6 +87,11 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batc
         tr_hist.append(train_loss)
         va_hist.append(valid_loss)
 
+        print_bool = (epoch % log_no == 0 
+                      or train_loss < best_tr 
+                      or valid_loss < best_va
+                      or epoch == n_epochs - 1)
+
         if train_loss < best_tr:
             best_tr = train_loss
             btr = f"Best Training Loss: {best_tr:.6f} at epoch {epoch}"
@@ -95,8 +100,8 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batc
             best_va = valid_loss
             bva = f"Best Validation Loss: {best_va:.6f} at epoch {epoch}"
             torch.save(model.state_dict(), 'fourier_model.pth')
-
-        if epoch % 10 == 0:
+            
+        if print_bool:
             now = datetime.datetime.now()
             msg = f"Epoch {epoch}: {now}: Train Loss = {train_loss:.6f}, Valid Loss = {valid_loss:.6f}"
             with open(log_path, 'a') as f:
@@ -108,8 +113,11 @@ n_epochs = 5000
 lr = 1e-3
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 loss = nn.MSELoss()
+log_no = 100
+batch_size = 100
 
-tr_hist, va_hist, btr, bva = training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs)
+
+tr_hist, va_hist, btr, bva = training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, log_no, batch_size)
 torch.save(tr_hist, 'training_results.npy')
 torch.save(va_hist, 'validation_results.npy')
 
