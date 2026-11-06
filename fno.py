@@ -7,8 +7,8 @@ import datetime
 log_path = "training_log.txt"
 open(log_path, 'w').close()  # Clear the log file
 
-now = datetime.datetime.now()
-msg = f"Start time: {now}"
+start = datetime.datetime.now()
+msg = f"Start time: {start}"
 with open(log_path, 'a') as f:
                 f.write(msg + '\n')
 
@@ -67,6 +67,7 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batc
     loader = DataLoader(TensorDataset(x_tr, y_tr), batch_size=batch_size, shuffle=True)
     tr_hist, va_hist = [], []
     best_va = float('inf')
+    best_tr = float('inf')
     
     for epoch in range(n_epochs):
         model.train()
@@ -86,8 +87,13 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batc
         tr_hist.append(train_loss)
         va_hist.append(valid_loss)
 
+        if train_loss < best_tr:
+            best_tr = train_loss
+            btr = f"Best Training Loss: {best_tr:.6f} at epoch {epoch}"
+
         if valid_loss < best_va:
             best_va = valid_loss
+            bva = f"Best Validation Loss: {best_va:.6f} at epoch {epoch}"
             torch.save(model.state_dict(), 'fourier_model.pth')
 
         if epoch % 10 == 0:
@@ -96,18 +102,22 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, batc
             with open(log_path, 'a') as f:
                 f.write(msg + '\n')
 
-    return tr_hist, va_hist
+    return tr_hist, va_hist, btr, bva
 
 n_epochs = 5000
 lr = 1e-3
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 loss = nn.MSELoss()
 
-tr_hist, va_hist = training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs)
+tr_hist, va_hist, btr, bva = training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs)
 torch.save(tr_hist, 'training_results.npy')
 torch.save(va_hist, 'validation_results.npy')
 
-now = datetime.datetime.now()
-msg = f"End time: {now}"
+end = datetime.datetime.now()
+msg = f"End time: {end}"
+dur = f"Duration: {end - start}"
 with open(log_path, 'a') as f:
                 f.write(msg + '\n')
+                f.write(dur + '\n')
+                f.write(btr + '\n')
+                f.write(bva + '\n')
