@@ -50,7 +50,7 @@ class FourierLayer(nn.Module):
         Wx = torch.einsum('oi,bin->bon', self.weight, x) # multiply input by weight to get linear output
         return torch.nn.functional.relu(Wx + x_if) # add linear and fourier outputs and apply relu
 
-width,modes = 64, 32
+width,modes = 32, 16
 
 model = nn.Sequential(
     nn.Conv1d(1, width, 1), # input layer
