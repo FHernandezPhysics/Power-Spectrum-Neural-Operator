@@ -4,6 +4,12 @@ import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 import datetime
 
+"""
+This model is the most recently developed version. The model in 
+fno-last-trained.py is an archive of the model's state at the time
+of training, while this is the version we use for active development.'
+"""
+
 log_path = "training_log.txt" # Open a log file to write training progress
 open(log_path, 'w').close()  # Clear the log file
 
