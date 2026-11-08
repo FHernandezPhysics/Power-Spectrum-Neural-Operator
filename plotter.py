@@ -4,6 +4,9 @@ import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 
+log_path = "test_log.txt" # Open a log file to write training progress
+open(log_path, 'w').close()  # Clear the log file
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 train_loops = np.load('training_data/results_combined_train.npy') # shape [10000,210,8]
@@ -62,6 +65,15 @@ with torch.no_grad():
     x_np = x_te.cpu().numpy()[:,0,:]
     yt_np = y_te.cpu().numpy()[:,0,:]
     yp_np = predictions.cpu().numpy()[:,0,:]
+
+    diff = (predictions - y_te).flatten(1)
+    ref = y_te.flatten(1)
+    mse = torch.mean(diff ** 2, dim=-1)
+    rel = torch.norm(diff, dim=-1) / torch.norm(ref, dim=-1)
+    with open(log_path, 'a') as f:
+        f.write(f"Average MSE={mse.mean().item()}, Average Relative Error={rel.mean().item()}\n")
+        for i, (m,r) in enumerate(zip(mse.tolist(), rel.tolist())):
+            f.write(f"Sample {i}: MSE={m}, Relative Error={r}\n")
 
 fig, ax = plt.subplots(figsize=(7,5))
 n = 5
