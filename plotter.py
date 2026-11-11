@@ -75,15 +75,52 @@ with torch.no_grad():
         for i, (m,r) in enumerate(zip(mse.tolist(), rel.tolist())):
             f.write(f"Sample {i}: MSE={m}, Relative Error={r}\n")
 
-fig, ax = plt.subplots(figsize=(7,5))
-n = 5
+# fig, ax = plt.subplots(figsize=(7,5))
+# n = 5
+# exp_colors = plt.cm.Blues(np.linspace(0.45, 1.0, n))     # expected: blues
+# mod_colors = plt.cm.Oranges(np.linspace(0.45, 1.0, n))   # model: oranges
+
+# for i in range(n):
+#     ax.loglog(np.abs(k_col[i]), np.abs(yt_np[i]), '-', color=exp_colors[i], lw=2, label=f'Expected {i}')
+#     ax.loglog(np.abs(k_col[i]), np.abs(yp_np[i]), '--', color=mod_colors[i], lw=1, label=f'Model {i}')
+# ax.grid(True, which='both', alpha=0.3)
+# plt.xlim(1e-3, 50)
+# ax.legend()
+
+# plt.savefig('predictions_plot.png',dpi=300)
+# plt.close()
+
+# plt.figure()
+# for i in range(n):
+#     plt.semilogx(np.abs(k_col[i]), np.abs(yp_np[i] / yt_np[i] - 1), '-', color=exp_colors[i], lw=1, label=f'Ratio {i}')
+# plt.xlim(1e-3, 50)
+# plt.ylim(0, 0.2)
+# plt.legend()
+# plt.savefig('ratio_plot.png',dpi=300)
+# plt.close()
+
+fig, (ax, ax_r) = plt.subplots(
+    2, 1, figsize=(7, 7), sharex=True,
+    gridspec_kw={'height_ratios': [3, 1], 'hspace': 0.05}
+)
+n = 20
 exp_colors = plt.cm.Blues(np.linspace(0.45, 1.0, n))     # expected: blues
 mod_colors = plt.cm.Oranges(np.linspace(0.45, 1.0, n))   # model: oranges
 
+# Top panel: expected vs. model
 for i in range(n):
-    ax.loglog(np.abs(x_np[i]), np.abs(yt_np[i]), '-', color=exp_colors[i], lw=2, label=f'Expected {i}')
-    ax.loglog(np.abs(x_np[i]), np.abs(yp_np[i]), '--', color=mod_colors[i], lw=1, label=f'Model {i}')
+    ax.loglog(np.abs(k_col[i]), np.abs(yt_np[i]), '-', color=exp_colors[i], lw=2, label=f'Expected {i}')
+    ax.loglog(np.abs(k_col[i]), np.abs(yp_np[i]), '--', color=mod_colors[i], lw=1, label=f'Model {i}')
 ax.grid(True, which='both', alpha=0.3)
-ax.legend()
-plt.savefig('predictions_plot.png',dpi=300)
+
+# Bottom panel: fractional error
+for i in range(n):
+    ax_r.semilogx(np.abs(k_col[i]), np.abs(0.04 * (yp_np[i] - yt_np[i]) / x_np[i]), '-', color=exp_colors[i], lw=1, label=f'Ratio {i}')
+ax_r.set_ylim(0, 0.02)
+ax_r.set_xlim(1e-3, 50)
+ax_r.set_xlabel('k')
+ax_r.set_ylabel('|model/expected - 1|')
+ax_r.grid(True, which='both', alpha=0.3)
+
+plt.savefig('predictions_plot.png', dpi=300, bbox_inches='tight')
 plt.close()
