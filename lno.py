@@ -17,9 +17,9 @@ with open(log_path, 'a') as f:
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Imports dataset
-train_loops = np.load('training_data/results_combined_train.npy') # shape [10000,210,8]
-valid_loops = np.load('training_data/results_valid.npy') # shapes [1000,210,8]
-test_loops = np.load('training_data/results_test.npy')
+train_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_combined_train.npy') # shape [10000,210,8]
+valid_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_valid.npy') # shapes [1000,210,8]
+test_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_test.npy')
 
 # Pulls relevant data and converts to torch tensors
 # each has shape [10000,1,210]
@@ -110,7 +110,7 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, log_
         if valid_loss < best_va:
             best_va = valid_loss
             bva = f"Best Validation Loss: {best_va:.6f} at epoch {epoch}"
-            torch.save(model.state_dict(), 'fourier_model.pth')
+            torch.save(model.state_dict(), 'lowrank_model.pth')
 
         # Print training progress to log file
         if print_bool:

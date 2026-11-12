@@ -9,9 +9,9 @@ open(log_path, 'w').close()  # Clear the log file
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-train_loops = np.load('training_data/results_combined_train.npy') # shape [10000,210,8]
-valid_loops = np.load('training_data/results_valid.npy') # shapes [1000,210,8]
-test_loops = np.load('training_data/results_test.npy')
+train_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_combined_train.npy') # shape [10000,210,8]
+valid_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_valid.npy') # shapes [1000,210,8]
+test_loops = np.load('/gpfs/scratch/ferhernandez/training_data/results_test.npy')
 
 # each has shape [10000,1,210]
 k_col = torch.from_numpy(train_loops[:,:,0]).to(device)
