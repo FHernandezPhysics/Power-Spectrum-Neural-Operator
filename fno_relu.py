@@ -10,7 +10,7 @@ fno-last-trained.py is an archive of the model's state at the time
 of training, while this is the version we use for active development.'
 """
 
-log_path = f"/activation_test/relu/relu_training_log.txt" # Open a log file to write training progress
+log_path = f"activation_test/relu/relu_training_log.txt" # Open a log file to write training progress
 open(log_path, 'w').close()  # Clear the log file
 
 # Records start time
@@ -127,7 +127,7 @@ def training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, log_
         if valid_loss < best_va:
             best_va = valid_loss
             bva = f"Best Validation Loss: {best_va:.6f} at epoch {epoch}"
-            torch.save(model.state_dict(), '/activation_test/relu/relu_model.pth')
+            torch.save(model.state_dict(), 'activation_test/relu/relu_model.pth')
 
         # Print training progress to log file
         if print_bool:
@@ -147,8 +147,8 @@ batch_size = 100
 
 # Runs the training loop and saves the training and validation loss history
 tr_hist, va_hist, btr, bva = training_loop(model, optimizer, loss, x_tr, y_tr, x_va, y_va, n_epochs, log_no, batch_size)
-torch.save(tr_hist, '/activation_test/relu/relu_training_results.npy')
-torch.save(va_hist, '/activation_test/relu/relu_validation_results.npy')
+torch.save(tr_hist, 'activation_test/relu/relu_training_results.npy')
+torch.save(va_hist, 'activation_test/relu/relu_validation_results.npy')
 
 # Records end time and duration of training
 end = datetime.datetime.now()
