@@ -70,7 +70,7 @@ class FourierLayer(nn.Module):
         Rft = torch.einsum('bin,ion->bon', x_ft[:, :, :self.modes], self.kernel) # multiply input by the kernel
         x_if = torch.fft.irfft(Rft, n=signal_length, dim=-1) # take inverse fft to get fourier output
         Wx = torch.einsum('oi,bin->bon', self.weight, x) # multiply input by weight to get linear output
-        return torch.nn.functional.arsinh(Wx + x_if) # add linear and fourier outputs and apply arsinh
+        return torch.asinh(Wx + x_if) # add linear and fourier outputs and apply arsinh
 
 width,modes = 32, 16
 
