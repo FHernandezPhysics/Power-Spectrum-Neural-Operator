@@ -82,7 +82,7 @@ model = nn.Sequential(
     FourierLayer(width, width, modes), # fourier layer
     FourierLayer(width, width, modes), # fourier layer
     nn.Conv1d(width, 128, 1), # linear layer
-    nn.Arsinh(),
+    nn.SiLU(),
     nn.Conv1d(128, 1, 1) # output layer
 ).to(device)
 

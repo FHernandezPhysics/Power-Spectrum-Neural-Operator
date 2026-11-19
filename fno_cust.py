@@ -79,11 +79,11 @@ class activation_fcn(nn.Module):
         super(activation_fcn, self).__init__()
 
         self.dim = dim
-        self.gamma = nn.Parameter(torch.zeros((dim)))
-        self.beta = nn.Parameter(torch.zeros((dim)))
+        self.gamma = nn.Parameter(torch.full((1, dim, 1), 0.9))
+        self.beta = nn.Parameter(torch.full((1, dim, 1), 0.1))
 
     def forward(self,x):
-        exp = torch.mul(self.beta,x)
+        exp = self.beta * x
         inv = torch.special.expit(exp)
         fac_2 = 1-self.gamma
         out = torch.mul(self.gamma + torch.mul(inv,fac_2), x)
